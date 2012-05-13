@@ -1,0 +1,8 @@
+This is a Java clone of Endgame: Singularity by Evil Mr Henry et al, which can
+be found at http://www.emhsoft.com/singularity/. Instead of Python, this version
+of the game requires Java 1.7.
+
+In version 0.0.1, you're tasked with the important mission of keeping an integer
+value nonnegative for five difficult action-packed turns. But beware, the forces
+of Evil are always trying to decrease your value! Protect it at all costs, even
+if you have to manually increase the value!
