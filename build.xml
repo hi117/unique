@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="singularity" basedir="." default="dist">
+<project name="unique" basedir="." default="dist">
 
     <fileset id="libs" dir="lib" erroronmissingdir="false">
         <include name="*.jar"/>

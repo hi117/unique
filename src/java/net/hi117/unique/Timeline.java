@@ -1,4 +1,4 @@
-package net.hi117.singularity;
+package net.hi117.unique;
 
 import java.util.PriorityQueue;
 
@@ -28,7 +28,9 @@ public class Timeline {
 		myQueue.add(event);
 	}
 
-	public boolean tick() throws CausalityViolationException {
+	public boolean tick()
+			throws CausalityViolationException, EventException
+	{
 		if (!setCurrentTime()) {
 			return false;
 		}

@@ -1,4 +1,4 @@
-package net.hi117.singularity;
+package net.hi117.unique;
 
 import java.io.Serializable;
 
@@ -10,5 +10,5 @@ public interface Event extends Serializable {
 
 	int getPriority();
 
-	void trigger() throws CausalityViolationException;
+	void trigger() throws CausalityViolationException, EventException;
 }

@@ -1,26 +1,17 @@
-package net.hi117.singularity;
+package net.hi117.unique;
 
-import net.hi117.singularity.events.GameStartEvent;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import net.hi117.unique.events.GameStartEvent;
 
 /**
  * @author Yanus Poluektovich (ypoluektovich@gmail.com)
  */
-public class Game implements AutoCloseable {
+public class Game {
 	private final Timeline myTimeline;
-
-	private final BufferedReader myReader;
 
 	private int myValue = 3;
 
-	public Game() throws IOException {
+	public Game() {
 		myTimeline = new Timeline();
-		myReader = new BufferedReader(
-				new InputStreamReader(System.in, "UTF-8")
-		);
 		try {
 			myTimeline.addEvent(new GameStartEvent(this));
 		} catch (CausalityViolationException ignore) {
@@ -45,12 +36,4 @@ public class Game implements AutoCloseable {
 		return myTimeline;
 	}
 
-	public String getUserInput() throws IOException {
-		return myReader.readLine();
-	}
-
-	@Override
-	public void close() throws IOException {
-		myReader.close();
-	}
 }

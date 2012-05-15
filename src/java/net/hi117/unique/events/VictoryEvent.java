@@ -1,8 +1,8 @@
-package net.hi117.singularity.events;
+package net.hi117.unique.events;
 
-import net.hi117.singularity.Game;
-import net.hi117.singularity.AbstractEvent;
-import net.hi117.singularity.CausalityViolationException;
+import net.hi117.unique.Game;
+import net.hi117.unique.AbstractEvent;
+import net.hi117.unique.CausalityViolationException;
 
 /**
  * @author Yanus Poluektovich (ypoluektovich@gmail.com)
@@ -15,7 +15,6 @@ class VictoryEvent extends AbstractEvent {
 
 	@Override
 	public void trigger() throws CausalityViolationException {
-		System.out.println("Congratulations! You won!");
-		System.out.println();
+		ourGameUserInterface.endGame(true);
 	}
 }

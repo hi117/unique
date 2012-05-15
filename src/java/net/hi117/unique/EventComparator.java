@@ -1,4 +1,4 @@
-package net.hi117.singularity;
+package net.hi117.unique;
 
 import java.util.Comparator;
 
