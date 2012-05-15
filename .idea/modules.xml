@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/singularity.iml" filepath="$PROJECT_DIR$/singularity.iml" />
+      <module fileurl="file://$PROJECT_DIR$/unique.iml" filepath="$PROJECT_DIR$/unique.iml" />
     </modules>
   </component>
 </project>
