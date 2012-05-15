@@ -46,8 +46,10 @@ public class MainFrame extends JFrame {
 
 		myCardLayout.show(getContentPane(), MENU_SCREEN);
 
-		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+		setMinimumSize(new Dimension(400, 300));
 		pack();
+
+		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 	}
 
 }

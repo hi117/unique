@@ -45,10 +45,7 @@ class GameScreen extends JPanel {
 	}
 
 	private JScrollPane createConsoleScrollPane(final JTextArea console) {
-		final JScrollPane scrollPane = new JScrollPane(console);
-		scrollPane.setMinimumSize(new Dimension(400, 300));
-		scrollPane.setPreferredSize(new Dimension(400, 300));
-		return scrollPane;
+		return new JScrollPane(console);
 	}
 
 	private JButton createIncreaseButton() {
