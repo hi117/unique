@@ -3,7 +3,7 @@ package net.hi117.unique;
 import java.util.PriorityQueue;
 
 /**
- * An object that incapsulates the timeline and handles the progression of
+ * An object that encapsulates the timeline and handles the progression of
  * in-game events.
  *
  * @author Yanus Poluektovich (ypoluektovich@gmail.com)
