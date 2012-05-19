@@ -45,6 +45,7 @@ public class MainFrame extends JFrame {
 		myGameScreen = new GameScreen(new Callback<Boolean>() {
 			@Override
 			public void doWith(final Boolean victory) {
+				myGameWorkerThread = null;
 				myMenuScreen.setLabel(victory);
 				myCardLayout.show(getContentPane(), MENU_SCREEN);
 			}
