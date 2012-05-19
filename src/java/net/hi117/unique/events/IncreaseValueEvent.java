@@ -15,11 +15,9 @@ class IncreaseValueEvent extends AbstractEvent {
 
 	@Override
 	public void trigger() throws EventException {
-		try {
-			ourGameUserInterface.message("You decided to increase the value!");
-		} catch (Exception e) {
-			throw new EventException(this, e);
+		if (myGame.isIncreaseThisTurn()) {
+			myGame.increaseValue();
+			ourGameUserInterface.updateValue();
 		}
-		myGame.increaseValue();
 	}
 }

@@ -9,13 +9,13 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.lang.reflect.InvocationTargetException;
-import java.util.concurrent.BrokenBarrierException;
-import java.util.concurrent.CyclicBarrier;
 
 /**
  * @author Yanus Poluektovich (ypoluektovich@gmail.com)
  */
 class GameScreen extends JPanel {
+
+	private volatile Game myGame;
 
 	private final Callback<Boolean> myEndGameCallback;
 
@@ -23,24 +23,27 @@ class GameScreen extends JPanel {
 
 	private final JTextArea myConsole;
 
+	private final JLabel myTimeLabel;
+
+	private final JLabel myValueLabel;
+
 	private final JButton myIncreaseButton;
 
-	private final JButton mySkipButton;
-
-	private volatile boolean myInput;
-
-	private final CyclicBarrier myInputBarrier = new CyclicBarrier(2);
 
 	GameScreen(final Callback<Boolean> endGameCallback)
 			throws InvocationTargetException, InterruptedException {
 		super(new GridBagLayout());
 		myEndGameCallback = endGameCallback;
+
 		myConsole = createConsoleTextArea();
 		myConsoleScroll = createConsoleScrollPane(myConsole);
+		myTimeLabel = createTimeLabel();
+		myValueLabel = createValueLabel();
 		myIncreaseButton = createIncreaseButton();
-		mySkipButton = createSkipButton();
 		createLayout();
+
 		addEventHandlers();
+
 		lockInputControls();
 	}
 
@@ -48,33 +51,25 @@ class GameScreen extends JPanel {
 		return new JScrollPane(console);
 	}
 
+	private JLabel createTimeLabel() {
+		final JLabel label = new JLabel();
+		label.setFont(label.getFont().deriveFont(15f));
+		return label;
+	}
+
+	private JLabel createValueLabel() {
+		final JLabel label = new JLabel();
+		label.setFont(label.getFont().deriveFont(15f));
+		return label;
+	}
+
 	private JButton createIncreaseButton() {
 		final JButton button = new JButton("Increase");
 		button.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(final ActionEvent e) {
-				myInput = true;
-				try {
-					myInputBarrier.await();
-				} catch (InterruptedException | BrokenBarrierException e1) {
-					e1.printStackTrace();
-				}
-			}
-		});
-		return button;
-	}
-
-	private JButton createSkipButton() {
-		final JButton button = new JButton("Skip");
-		button.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(final ActionEvent e) {
-				myInput = false;
-				try {
-					myInputBarrier.await();
-				} catch (InterruptedException | BrokenBarrierException e1) {
-					e1.printStackTrace();
-				}
+				myGame.setIncreaseThisTurn(true);
+				lockInputControls();
 			}
 		});
 		return button;
@@ -92,7 +87,7 @@ class GameScreen extends JPanel {
 	private void createLayout() {
 		final GridBagConstraints constraints = new GridBagConstraints();
 
-		constraints.gridwidth = 2;
+		constraints.gridwidth = 3;
 		constraints.insets = new Insets(12, 12, 3, 12);
 		constraints.fill = GridBagConstraints.BOTH;
 		constraints.weightx = 1.0;
@@ -101,97 +96,105 @@ class GameScreen extends JPanel {
 
 		constraints.gridy = 1;
 		constraints.gridwidth = 1;
-		constraints.fill = GridBagConstraints.HORIZONTAL;
-		constraints.weightx = 0.5;
+		constraints.fill = GridBagConstraints.NONE;
+		constraints.weightx = 1.0 / 3.0;
 		constraints.weighty = 0.0;
+		constraints.anchor = GridBagConstraints.CENTER;
 		constraints.insets = new Insets(3, 12, 12, 3);
-		this.add(myIncreaseButton, constraints);
+		this.add(myTimeLabel, constraints);
 
 		constraints.gridx = 1;
+		constraints.insets = new Insets(3, 3, 12, 3);
+		this.add(myValueLabel, constraints);
+
+		constraints.gridx = 2;
 		constraints.insets = new Insets(3, 3, 12, 12);
-		this.add(mySkipButton, constraints);
+		this.add(myIncreaseButton, constraints);
 	}
 
 
 	private void addEventHandlers() {
-		AbstractEvent.ourGameUserInterface = new GameUserInterface() {
-			@Override
-			public void init(final Game game) {
-				myConsole.setText("");
-			}
-
-			@Override
-			public void message(final String message) throws Exception {
-				printlnToConsole(message);
-			}
-
-			@Override
-			public boolean input() throws Exception {
-				return processUserInput();
-			}
-
-			@Override
-			public void endGame(final Boolean victory) {
-				myEndGameCallback.doWith(victory);
-			}
-		};
+		AbstractEvent.ourGameUserInterface = new GameUserInterfaceImpl();
 	}
 
 
-	private void lockInputControls()
-			throws InvocationTargetException, InterruptedException {
-		if (SwingUtilities.isEventDispatchThread()) {
-			myIncreaseButton.setEnabled(false);
-			mySkipButton.setEnabled(false);
-		} else {
-			SwingUtilities.invokeAndWait(
-					new Runnable() {
-						@Override
-						public void run() {
-							myIncreaseButton.setEnabled(false);
-							mySkipButton.setEnabled(false);
-						}
-					}
-			);
-		}
+	private void lockInputControls() {
+		myIncreaseButton.setEnabled(false);
 	}
 
-	private void unlockInputControls()
-			throws InvocationTargetException, InterruptedException {
-		if (SwingUtilities.isEventDispatchThread()) {
-			myIncreaseButton.setEnabled(true);
-			mySkipButton.setEnabled(true);
-		} else {
-			SwingUtilities.invokeAndWait(
-					new Runnable() {
-						@Override
-						public void run() {
-							myIncreaseButton.setEnabled(true);
-							mySkipButton.setEnabled(true);
-						}
-					}
-			);
-		}
+	private void unlockInputControls() {
+		myIncreaseButton.setEnabled(true);
 	}
 
 
 	private void printlnToConsole(final String message) throws Exception {
-		SwingUtilities.invokeAndWait(new Runnable() {
+		final Runnable runnable = new Runnable() {
 			@Override
 			public void run() {
 				myConsole.append(message);
 				myConsole.append("\n");
 				myConsole.setCaretPosition(myConsole.getDocument().getLength());
 			}
-		});
+		};
+		if (SwingUtilities.isEventDispatchThread()) {
+			runnable.run();
+		} else {
+			SwingUtilities.invokeAndWait(runnable);
+		}
 		myConsole.repaint();
 	}
 
-	private boolean processUserInput() throws Exception {
-		unlockInputControls();
-		myInputBarrier.await();
-		lockInputControls();
-		return myInput;
-	}
 
+	private class GameUserInterfaceImpl implements GameUserInterface {
+		@Override
+		public void init(final Game game) {
+			myConsole.setText("");
+			myGame = game;
+		}
+
+		@Override
+		public void updateTime() {
+			SwingUtilities.invokeLater(
+					new Runnable() {
+						@Override
+						public void run() {
+							final long currentTime =
+									myGame.getTimeline().getCurrentTime();
+							myTimeLabel.setText("Time: " + currentTime);
+						}
+					}
+			);
+		}
+
+		@Override
+		public void updateValue() {
+			SwingUtilities.invokeLater(new Runnable() {
+				@Override
+				public void run() {
+					final int value = myGame.getValue();
+					myValueLabel.setText("Value: " + value);
+				}
+			});
+		}
+
+		@Override
+		public void unlockControls() {
+			SwingUtilities.invokeLater(new Runnable() {
+				@Override
+				public void run() {
+					unlockInputControls();
+				}
+			});
+		}
+
+		@Override
+		public void message(final String message) throws Exception {
+			printlnToConsole(message);
+		}
+
+		@Override
+		public void endGame(final Boolean victory) {
+			myEndGameCallback.doWith(victory);
+		}
+	}
 }

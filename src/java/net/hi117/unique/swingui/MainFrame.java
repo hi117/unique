@@ -4,7 +4,11 @@ import net.hi117.unique.Game;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.lang.reflect.InvocationTargetException;
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.ExecutionException;
 
 /**
  * @author Yanus Poluektovich (ypoluektovich@gmail.com)
@@ -21,6 +25,8 @@ public class MainFrame extends JFrame {
 
 	private final GameScreen myGameScreen;
 
+	private volatile GameWorkerThread myGameWorkerThread;
+
 	public MainFrame() throws InvocationTargetException, InterruptedException {
 		super("Unique");
 
@@ -30,7 +36,8 @@ public class MainFrame extends JFrame {
 			@Override
 			public void run() {
 				myCardLayout.show(getContentPane(), GAME_SCREEN);
-				new GameWorkerThread(new Game()).execute();
+				myGameWorkerThread = new GameWorkerThread(new Game());
+				myGameWorkerThread.execute();
 			}
 		});
 		getContentPane().add(myMenuScreen, MENU_SCREEN);
@@ -49,7 +56,21 @@ public class MainFrame extends JFrame {
 		setMinimumSize(new Dimension(400, 300));
 		pack();
 
-		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+		addWindowListener(
+				new WindowAdapter() {
+					@Override
+					public void windowClosing(final WindowEvent e) {
+						myGameWorkerThread.cancel(true);
+						try {
+							myGameWorkerThread.get();
+						} catch (InterruptedException | ExecutionException |
+								CancellationException ignore) {
+							// ignore
+						}
+						MainFrame.this.dispose();
+					}
+				}
+		);
 	}
 
 }

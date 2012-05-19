@@ -19,8 +19,9 @@ public class GameStartEvent extends AbstractEvent {
 			ourGameUserInterface.init(myGame);
 			ourGameUserInterface.message("Welcome to Unique!");
 			ourGameUserInterface.message(
-					"In this game, you must not allow a value " +
-							"to become negative for five turns."
+					"In this game, " +
+							"you must not allow a value to become negative " +
+							"for twenty seconds."
 			);
 			ourGameUserInterface.message("Good luck!");
 			ourGameUserInterface.message("");

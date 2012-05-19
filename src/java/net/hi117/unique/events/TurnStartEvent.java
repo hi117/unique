@@ -16,14 +16,15 @@ class TurnStartEvent extends AbstractEvent {
 	@Override
 	public void trigger() throws EventException {
 		try {
-			ourGameUserInterface.message("It is turn " + getTime());
-			ourGameUserInterface.message("Your value is " + myGame.getValue());
+			ourGameUserInterface.updateTime();
+			ourGameUserInterface.updateValue();
 		} catch (Exception e) {
 			throw new EventException(this, e);
 		}
+		myGame.setIncreaseThisTurn(false);
 		if (myGame.getValue() < 0) {
 			myGame.getTimeline().addEvent(new DefeatEvent(getTime(), myGame));
-		} else if (getTime() >= 5) {
+		} else if (getTime() >= 20) {
 			myGame.getTimeline().addEvent(new VictoryEvent(getTime(), myGame));
 		} else {
 			myGame.getTimeline().addEvent(

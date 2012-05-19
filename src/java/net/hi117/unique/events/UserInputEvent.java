@@ -14,21 +14,12 @@ class UserInputEvent extends AbstractEvent {
 	}
 
 	@Override
-	public void trigger() throws EventException {
-		final boolean increase;
-		try {
-			ourGameUserInterface.message(
-					"Do you want to increase your value this turn?"
-			);
-			increase = ourGameUserInterface.input();
-		} catch (Exception e) {
-			throw new EventException(this, e);
-		}
-		if (increase) {
-			myGame.getTimeline().addEvent(
-					new IncreaseValueEvent(getTime(), myGame)
-			);
-		}
+	public void trigger() throws EventException, InterruptedException {
+		ourGameUserInterface.unlockControls();
+		Thread.sleep(1000);
+		myGame.getTimeline().addEvent(
+				new IncreaseValueEvent(getTime(), myGame)
+		);
 		myGame.getTimeline().addEvent(
 				new DecreaseValueEvent(getTime(), myGame)
 		);

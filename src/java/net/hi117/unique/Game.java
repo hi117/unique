@@ -2,34 +2,47 @@ package net.hi117.unique;
 
 import net.hi117.unique.events.GameStartEvent;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 /**
  * @author Yanus Poluektovich (ypoluektovich@gmail.com)
  */
 public class Game {
 	private final Timeline myTimeline;
 
-	private int myValue = 3;
+	private AtomicInteger myValue = new AtomicInteger(10);
 
+	private volatile boolean myIncreaseThisTurn;
+
+	/**
+	 * Creates a new game.
+	 *
+	 * A new timeline is created and populated with a single {@link
+	 * GameStartEvent}. The value is set to 30.
+	 */
 	public Game() {
 		myTimeline = new Timeline();
-		try {
-			myTimeline.addEvent(new GameStartEvent(this));
-		} catch (CausalityViolationException ignore) {
-			// can't happen
-			ignore.printStackTrace();
-		}
+		myTimeline.addEvent(new GameStartEvent(this));
 	}
 
 	public final int getValue() {
-		return myValue;
+		return myValue.get();
 	}
 
 	public final int increaseValue() {
-		return myValue += 1;
+		return myValue.addAndGet(5);
 	}
 
 	public final int decreaseValue() {
-		return myValue -= 1;
+		return myValue.decrementAndGet();
+	}
+
+	public boolean isIncreaseThisTurn() {
+		return myIncreaseThisTurn;
+	}
+
+	public void setIncreaseThisTurn(final boolean increaseThisTurn) {
+		myIncreaseThisTurn = increaseThisTurn;
 	}
 
 	public final Timeline getTimeline() {

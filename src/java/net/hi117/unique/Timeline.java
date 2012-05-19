@@ -29,8 +29,8 @@ public class Timeline {
 	}
 
 	public boolean tick()
-			throws CausalityViolationException, EventException
-	{
+			throws CausalityViolationException, EventException,
+			       InterruptedException {
 		if (!setCurrentTime()) {
 			return false;
 		}
@@ -55,4 +55,7 @@ public class Timeline {
 		return true;
 	}
 
+	public long getCurrentTime() {
+		return myCurrentTime;
+	}
 }

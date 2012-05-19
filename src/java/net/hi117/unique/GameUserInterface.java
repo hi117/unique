@@ -6,9 +6,13 @@ package net.hi117.unique;
 public interface GameUserInterface {
 	void init(final Game game);
 
-	void message(final String message) throws Exception;
+	void updateTime();
 
-	boolean input() throws Exception;
+	void updateValue();
+
+	void unlockControls();
+
+	void message(final String message) throws Exception;
 
 	void endGame(final Boolean victory);
 }

@@ -55,6 +55,7 @@ class MenuScreen extends JPanel {
 					myLabel.setText("DEFEAT");
 		            myLabel.setForeground(Color.RED);
 				}
+				myLabel.repaint();
 			}
 		});
 	}

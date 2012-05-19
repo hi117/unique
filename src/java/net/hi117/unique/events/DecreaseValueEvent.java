@@ -16,22 +16,12 @@ class DecreaseValueEvent extends AbstractEvent {
 
 	@Override
 	public void trigger() throws CausalityViolationException, EventException {
-		try {
-			ourGameUserInterface.message(
-					"It is now end of turn, " +
-							"and all values in town are being decreased!"
-			);
-			ourGameUserInterface.message(
-					"Your value has become " + myGame.decreaseValue()
-			);
-			ourGameUserInterface.message("");
-		} catch (Exception e) {
-			throw new EventException(this, e);
-		}
-		myGame.getTimeline().addEvent(new TurnStartEvent(
-				getTime() + 1,
-				myGame
-		));
+		myGame.decreaseValue();
+		ourGameUserInterface.updateValue();
+
+		myGame.getTimeline().addEvent(
+				new TurnStartEvent(getTime() + 1, myGame)
+		);
 	}
 
 }

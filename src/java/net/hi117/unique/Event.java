@@ -10,5 +10,6 @@ public interface Event extends Serializable {
 
 	int getPriority();
 
-	void trigger() throws CausalityViolationException, EventException;
+	void trigger() throws CausalityViolationException, EventException,
+	                      InterruptedException;
 }
