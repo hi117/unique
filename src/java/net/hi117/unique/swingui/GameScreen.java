@@ -64,7 +64,7 @@ class GameScreen extends JPanel {
 	}
 
 	private JButton createIncreaseButton() {
-		final JButton button = new JButton("Increase");
+		final JButton button = new JButton("Increase by 5");
 		button.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(final ActionEvent e) {
