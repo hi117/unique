@@ -60,12 +60,14 @@ public class MainFrame extends JFrame {
 				new WindowAdapter() {
 					@Override
 					public void windowClosing(final WindowEvent e) {
-						myGameWorkerThread.cancel(true);
-						try {
-							myGameWorkerThread.get();
-						} catch (InterruptedException | ExecutionException |
-								CancellationException ignore) {
-							// ignore
+						if (myGameWorkerThread != null) {
+							myGameWorkerThread.cancel(true);
+							try {
+								myGameWorkerThread.get();
+							} catch (InterruptedException | ExecutionException |
+									CancellationException ignore) {
+								// ignore
+							}
 						}
 						MainFrame.this.dispose();
 					}
