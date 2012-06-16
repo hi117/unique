@@ -3,11 +3,12 @@ package net.hi117.unique;
 import net.hi117.unique.events.GameStartEvent;
 
 import java.util.concurrent.atomic.AtomicInteger;
+import java.io.Serializable;
 
 /**
  * @author Yanus Poluektovich (ypoluektovich@gmail.com)
  */
-public class Game {
+public class Game implements Serializable {
 	private final Timeline myTimeline;
 
 	private AtomicInteger myValue = new AtomicInteger(10);

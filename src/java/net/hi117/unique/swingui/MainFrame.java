@@ -26,6 +26,8 @@ public class MainFrame extends JFrame {
 	private final GameScreen myGameScreen;
 
 	private volatile GameWorkerThread myGameWorkerThread;
+	
+	private String loadFile = "";
 
 	public MainFrame() throws InvocationTargetException, InterruptedException {
 		super("Unique");
@@ -36,7 +38,12 @@ public class MainFrame extends JFrame {
 			@Override
 			public void run() {
 				myCardLayout.show(getContentPane(), GAME_SCREEN);
-				myGameWorkerThread = new GameWorkerThread(new Game());
+				if (loadFile == "") {
+					myGameWorkerThread = new GameWorkerThread(new Game());
+				}
+				else {
+					myGameWorkerThread = new GameWorkerThread(load(loadFile));
+				}
 				myGameWorkerThread.execute();
 			}
 		});
@@ -75,5 +82,20 @@ public class MainFrame extends JFrame {
 				}
 		);
 	}
-
+	public Game load(final String filename)
+		throws IOException {
+	Game game = null;
+	FileInputStream fis = null;
+	ObjectInputStream in = null;
+	try{
+		fis = new FileInputStream(filename);
+		in = new ObjectInputStream(fis);
+		time = (Game)in.readObject();
+		in.close();
+	}
+	catch (){
+	
+	}
+	return Game;
+	}
 }

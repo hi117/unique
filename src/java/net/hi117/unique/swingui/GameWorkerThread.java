@@ -7,6 +7,10 @@ import net.hi117.unique.Timeline;
 
 import javax.swing.*;
 
+import java.io.ObjectOutputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+
 /**
  * The thread that advances the game along the timeline.
  *
@@ -35,7 +39,6 @@ class GameWorkerThread extends SwingWorker<Void, Void> {
 	protected Void doInBackground()
 			throws EventException, CausalityViolationException {
 		final Timeline timeline = myGame.getTimeline();
-
 		try {
 			boolean advanced;
 			do {
@@ -46,5 +49,19 @@ class GameWorkerThread extends SwingWorker<Void, Void> {
 		}
 
 		return null;
+	}
+	public void save()
+		throws IOException {
+	// TODO: get a save dialouge, having only one save is annoying
+	String filename = "test.sav";
+	try {
+		fos = new FileOutputStream(filename);
+		out = new ObjectOutputStream(fos);
+		out.writeObject(myGame);
+		out.close();
+	}
+	catch (IOException) {
+	
+	}
 	}
 }
