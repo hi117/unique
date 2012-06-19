@@ -45,10 +45,7 @@ public class MainFrame extends JFrame {
 					myGameWorkerThread = new GameWorkerThread(new Game());
 				}
 				else {
-					try {
 					myGameWorkerThread = new GameWorkerThread(load(loadFile));
-					} catch (Exception e) {
-					}
 				}
 				myGameWorkerThread.execute();
 			}
@@ -88,15 +85,15 @@ public class MainFrame extends JFrame {
 				}
 		);
 	}
-	public Game load(final String filename) throws IOException {
+	public Game load(final String filename) {
 		Game game = null;
 		FileInputStream fis = null;
 		ObjectInputStream in = null;
 		try{
-		fis = new FileInputStream(filename);
-		in = new ObjectInputStream(fis);
-		game = (Game)in.readObject();
-		in.close();
+			fis = new FileInputStream(filename);
+			in = new ObjectInputStream(fis);
+			game = (Game)in.readObject();
+			in.close();
 		}
 		catch (Exception e){
 		
