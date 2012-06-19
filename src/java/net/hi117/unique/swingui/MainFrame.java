@@ -9,7 +9,10 @@ import java.awt.event.WindowEvent;
 import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
+import java.io.FileInputStream;
+import java.io.ObjectInputStream;
 
+import java.io.IOException;
 /**
  * @author Yanus Poluektovich (ypoluektovich@gmail.com)
  */
@@ -42,7 +45,10 @@ public class MainFrame extends JFrame {
 					myGameWorkerThread = new GameWorkerThread(new Game());
 				}
 				else {
+					try {
 					myGameWorkerThread = new GameWorkerThread(load(loadFile));
+					} catch (Exception e) {
+					}
 				}
 				myGameWorkerThread.execute();
 			}
@@ -82,20 +88,19 @@ public class MainFrame extends JFrame {
 				}
 		);
 	}
-	public Game load(final String filename)
-		throws IOException {
-	Game game = null;
-	FileInputStream fis = null;
-	ObjectInputStream in = null;
-	try{
+	public Game load(final String filename) throws IOException {
+		Game game = null;
+		FileInputStream fis = null;
+		ObjectInputStream in = null;
+		try{
 		fis = new FileInputStream(filename);
 		in = new ObjectInputStream(fis);
-		time = (Game)in.readObject();
+		game = (Game)in.readObject();
 		in.close();
-	}
-	catch (){
-	
-	}
-	return Game;
+		}
+		catch (Exception e){
+		
+		}
+		return game;
 	}
 }

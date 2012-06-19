@@ -55,12 +55,12 @@ class GameWorkerThread extends SwingWorker<Void, Void> {
 	// TODO: get a save dialouge, having only one save is annoying
 	String filename = "test.sav";
 	try {
-		fos = new FileOutputStream(filename);
-		out = new ObjectOutputStream(fos);
+		FileOutputStream fos = new FileOutputStream(filename);
+		ObjectOutputStream out = new ObjectOutputStream(fos);
 		out.writeObject(myGame);
 		out.close();
 	}
-	catch (IOException) {
+	catch (IOException e) {
 	
 	}
 	}
