@@ -7,16 +7,16 @@ import net.hi117.unique.Game;
 /**
 * @author Yanus Poluektovich (ypoluektovich@gmail.com)
 */
-public class GameStartEvent extends AbstractEvent {
+public class GameStartEvent extends AbstractEvent<Game> {
 
-	public GameStartEvent(final Game game) {
-		super(0, -1, game);
+	public GameStartEvent() {
+		super(0, -1);
 	}
 
 	@Override
-	public void trigger() throws EventException {
+	public void trigger(final Game game) throws EventException {
 		try {
-			ourGameUserInterface.init(myGame);
+			ourGameUserInterface.init(game);
 			ourGameUserInterface.message("Welcome to Unique!");
 			ourGameUserInterface.message(
 					"In this game, " +
@@ -29,7 +29,7 @@ public class GameStartEvent extends AbstractEvent {
 			throw new EventException(this, e);
 		}
 
-		myGame.getTimeline().addEvent(new TurnStartEvent(0, myGame));
+		game.getTimeline().addEvent(new TurnStartEvent(0));
 	}
 
 }

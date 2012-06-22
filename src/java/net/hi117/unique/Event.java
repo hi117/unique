@@ -5,11 +5,12 @@ import java.io.Serializable;
 /**
  * @author Yanus Poluektovich (ypoluektovich@gmail.com)
  */
-public interface Event extends Serializable {
+public interface Event<G> extends Serializable {
 	long getTime();
 
 	int getPriority();
 
-	void trigger() throws CausalityViolationException, EventException,
-	                      InterruptedException;
+	void trigger(final G game)
+			throws CausalityViolationException, EventException,
+			       InterruptedException;
 }

@@ -3,7 +3,7 @@ package net.hi117.unique;
 /**
  * @author Yanus Poluektovich (ypoluektovich@gmail.com)
  */
-public abstract class AbstractEvent implements Event {
+public abstract class AbstractEvent<G> implements Event<G> {
 
 	public static GameUserInterface ourGameUserInterface;
 
@@ -11,15 +11,9 @@ public abstract class AbstractEvent implements Event {
 
 	private final int myPriority;
 
-	protected final Game myGame;
-
-	protected AbstractEvent(final long time,
-			final int priority,
-			final Game game
-	) {
+	protected AbstractEvent(final long time, final int priority) {
 		myTime = time;
 		myPriority = priority;
-		myGame = game;
 	}
 
 	@Override

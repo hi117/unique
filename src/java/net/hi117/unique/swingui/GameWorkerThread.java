@@ -6,10 +6,9 @@ import net.hi117.unique.Game;
 import net.hi117.unique.Timeline;
 
 import javax.swing.*;
-
-import java.io.ObjectOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 
 /**
  * The thread that advances the game along the timeline.
@@ -33,16 +32,16 @@ class GameWorkerThread extends SwingWorker<Void, Void> {
 	 * @throws CausalityViolationException if an event attempts to schedule
 	 * another event in the past.
 	 *
-	 * @see Timeline#tick()
+	 * @see Timeline#tick(Object)
 	 */
 	@Override
 	protected Void doInBackground()
 			throws EventException, CausalityViolationException {
-		final Timeline timeline = myGame.getTimeline();
+		final Timeline<Game> timeline = myGame.getTimeline();
 		try {
 			boolean advanced;
 			do {
-				advanced = timeline.tick();
+				advanced = timeline.tick(myGame);
 			} while (advanced);
 		} catch (InterruptedException e) {
 			// break the loop

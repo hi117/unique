@@ -7,16 +7,16 @@ import net.hi117.unique.Game;
 /**
  * @author Yanus Poluektovich (ypoluektovich@gmail.com)
  */
-class IncreaseValueEvent extends AbstractEvent {
+class IncreaseValueEvent extends AbstractEvent<Game> {
 
-	IncreaseValueEvent(final long time, final Game game) {
-		super(time, 2, game);
+	IncreaseValueEvent(final long time) {
+		super(time, 2);
 	}
 
 	@Override
-	public void trigger() throws EventException {
-		if (myGame.isIncreaseThisTurn()) {
-			myGame.increaseValue();
+	public void trigger(final Game game) throws EventException {
+		if (game.isIncreaseThisTurn()) {
+			game.increaseValue();
 			ourGameUserInterface.updateValue();
 		}
 	}

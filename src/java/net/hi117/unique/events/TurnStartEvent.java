@@ -7,29 +7,27 @@ import net.hi117.unique.Game;
 /**
  * @author Yanus Poluektovich (ypoluektovich@gmail.com)
  */
-class TurnStartEvent extends AbstractEvent {
+class TurnStartEvent extends AbstractEvent<Game> {
 
-	TurnStartEvent(final long time, final Game game) {
-		super(time, 0, game);
+	TurnStartEvent(final long time) {
+		super(time, 0);
 	}
 
 	@Override
-	public void trigger() throws EventException {
+	public void trigger(final Game game) throws EventException {
 		try {
 			ourGameUserInterface.updateTime();
 			ourGameUserInterface.updateValue();
 		} catch (Exception e) {
 			throw new EventException(this, e);
 		}
-		myGame.setIncreaseThisTurn(false);
-		if (myGame.getValue() < 0) {
-			myGame.getTimeline().addEvent(new DefeatEvent(getTime(), myGame));
+		game.setIncreaseThisTurn(false);
+		if (game.getValue() < 0) {
+			game.getTimeline().addEvent(new DefeatEvent(getTime()));
 		} else if (getTime() >= 20) {
-			myGame.getTimeline().addEvent(new VictoryEvent(getTime(), myGame));
+			game.getTimeline().addEvent(new VictoryEvent(getTime()));
 		} else {
-			myGame.getTimeline().addEvent(
-					new UserInputEvent(getTime(), myGame)
-			);
+			game.getTimeline().addEvent(new UserInputEvent(getTime()));
 		}
 	}
 

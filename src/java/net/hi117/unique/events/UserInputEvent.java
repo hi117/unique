@@ -7,21 +7,17 @@ import net.hi117.unique.Game;
 /**
  * @author Yanus Poluektovich (ypoluektovich@gmail.com)
  */
-class UserInputEvent extends AbstractEvent {
+class UserInputEvent extends AbstractEvent<Game> {
 
-	UserInputEvent(final long time, final Game game) {
-		super(time, 1, game);
+	UserInputEvent(final long time) {
+		super(time, 1);
 	}
 
 	@Override
-	public void trigger() throws EventException, InterruptedException {
+	public void trigger(final Game game) throws EventException, InterruptedException {
 		ourGameUserInterface.unlockControls();
 		Thread.sleep(1000);
-		myGame.getTimeline().addEvent(
-				new IncreaseValueEvent(getTime(), myGame)
-		);
-		myGame.getTimeline().addEvent(
-				new DecreaseValueEvent(getTime(), myGame)
-		);
+		game.getTimeline().addEvent(new IncreaseValueEvent(getTime()));
+		game.getTimeline().addEvent(new DecreaseValueEvent(getTime()));
 	}
 }

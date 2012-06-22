@@ -8,20 +8,19 @@ import net.hi117.unique.Game;
 /**
  * @author Yanus Poluektovich (ypoluektovich@gmail.com)
  */
-class DecreaseValueEvent extends AbstractEvent {
+class DecreaseValueEvent extends AbstractEvent<Game> {
 
-	DecreaseValueEvent(final long time, final Game game) {
-		super(time, 3, game);
+	DecreaseValueEvent(final long time) {
+		super(time, 3);
 	}
 
 	@Override
-	public void trigger() throws CausalityViolationException, EventException {
-		myGame.decreaseValue();
+	public void trigger(final Game game)
+			throws CausalityViolationException, EventException {
+		game.decreaseValue();
 		ourGameUserInterface.updateValue();
 
-		myGame.getTimeline().addEvent(
-				new TurnStartEvent(getTime() + 1, myGame)
-		);
+		game.getTimeline().addEvent(new TurnStartEvent(getTime() + 1));
 	}
 
 }

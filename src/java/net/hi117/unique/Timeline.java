@@ -5,8 +5,9 @@ import java.io.InvalidObjectException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Queue;
 
@@ -16,9 +17,9 @@ import java.util.Queue;
  *
  * @author Yanus Poluektovich (ypoluektovich@gmail.com)
  */
-public final class Timeline implements Serializable {
+public final class Timeline<G> implements Serializable {
 
-	private final Queue<Event> myQueue =
+	private final Queue<Event<G>> myQueue =
 			new PriorityQueue<>(16, EventComparator.INSTANCE);
 
 	private long myCurrentTime;
@@ -27,29 +28,29 @@ public final class Timeline implements Serializable {
 
 
 	public Timeline() {
-		// do nothing
+		// nothing to do
 	}
 
 
 	/* Serialization */
 
-	private Timeline(final Event[] events) {
-		myQueue.addAll(Arrays.asList(events));
+	private Timeline(final Collection<Event<G>> events) {
+		myQueue.addAll(events);
 	}
 
-	private static final class SerialProxy implements Serializable {
+	private static final class SerialProxy<G> implements Serializable {
 		private static final long serialVersionUID = 1L;
-		private transient Event[] myEvents;
+		private transient List<Event<G>> myEvents;
 
-		protected SerialProxy(final Collection<Event> events) {
-			myEvents = events.toArray(new Event[events.size()]);
+		protected SerialProxy(final Collection<Event<G>> events) {
+			myEvents = new ArrayList<>(events);
 		}
 
 		private void writeObject(final ObjectOutputStream s)
 				throws IOException {
 			s.defaultWriteObject();
-			s.writeInt(myEvents.length);
-			for (final Event event : myEvents) {
+			s.writeInt(myEvents.size());
+			for (final Event<G> event : myEvents) {
 				s.writeObject(event);
 			}
 		}
@@ -58,15 +59,19 @@ public final class Timeline implements Serializable {
 				throws ClassNotFoundException, IOException {
 			s.defaultReadObject();
 			final int eventCount = s.readInt();
-			final Event[] events = new Event[eventCount];
+			final List<Event<G>> events = new ArrayList<>(eventCount);
 			for (int i = 0; i < eventCount; ++i) {
-				events[i] = (Event) s.readObject();
+				// this may throw java.lang.ClassCastException
+				// if the game save is compromised
+				@SuppressWarnings("unchecked")
+				final Event<G> event = (Event<G>) s.readObject();
+				events.add(event);
 			}
 			myEvents = events;
 		}
 
 		private Object readResolve() {
-			return new Timeline(myEvents);
+			return new Timeline<>(myEvents);
 		}
 	}
 
@@ -77,19 +82,19 @@ public final class Timeline implements Serializable {
 
 	private Object writeReplace() {
 		synchronized (myQueue) {
-			return new SerialProxy(myQueue);
+			return new SerialProxy<>(myQueue);
 		}
 	}
 
 
-	public final boolean tick()
+	public final boolean tick(final G game)
 			throws CausalityViolationException, EventException,
 			       InterruptedException {
 		if (!setCurrentTime()) {
 			return false;
 		}
 		while (true) {
-			final Event event;
+			final Event<G> event;
 			synchronized (myQueue) {
 				event = myQueue.peek();
 				if (event == null || event.getTime() != myCurrentTime) {
@@ -97,7 +102,7 @@ public final class Timeline implements Serializable {
 				}
 				myCurrentPriority = event.getPriority();
 			}
-			event.trigger();
+			event.trigger(game);
 			synchronized (myQueue) {
 				myQueue.remove(event);
 			}
@@ -105,7 +110,7 @@ public final class Timeline implements Serializable {
 		return true;
 	}
 
-	public final void addEvent(final Event event)
+	public final void addEvent(final Event<G> event)
 			throws CausalityViolationException {
 		synchronized (myQueue) {
 			final long newTime = event.getTime();
@@ -128,7 +133,7 @@ public final class Timeline implements Serializable {
 
 	private boolean setCurrentTime() {
 		synchronized (myQueue) {
-			final Event peek = myQueue.peek();
+			final Event<G> peek = myQueue.peek();
 			if (peek == null) {
 				return false;
 			}
